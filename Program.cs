@@ -40,18 +40,6 @@ class Program
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
-        // --------- sha256 ---------
-        try
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                temp = sha256.ComputeHash(bytes);
-            }
-        }
-        catch { temp = defaultErrorMessage; }
-        finally { hashList.Add(temp); }
-        GC.Collect(); //forces use of garbage collector
-                      //SHA256 strings may be very large, up to few TBs size
         // --------- sha1 ---------
         try
         {
@@ -62,24 +50,17 @@ class Program
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
-        return hashList;
-    }
-
-    //print byte array as string
-    static void PrintByteArray(byte[] array)
-    {
-        /*
-        for (int i = 0; i < array.Length; i++)
+        // --------- sha256 ---------
+        try
         {
-            Console.Write($"{array[i]:X2}");
-            if ((i % 4) == 3) Console.Write(" ");
+            using (var sha256 = SHA256.Create())
+            {
+                temp = sha256.ComputeHash(bytes);
+            }
         }
-        Console.WriteLine();
-        */
-        Console.WriteLine(BitConverter.ToString(array).Replace("-", "").ToLower());
-        //0cc175b9c0f1b6a831c399e269772661 -- md5
-        //86f7e437faa5a7fce15d1ddcb9eaeaea377667b8 -- sha1
-        //ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb -- sha256
+        catch { temp = defaultErrorMessage; }
+        finally { hashList.Add(temp); }
+        return hashList;
     }
 
     //simple loop that runs on background/2nd thread
@@ -88,14 +69,8 @@ class Program
     // --- to fix ---
     static void ExitOnPress()
     {
-        while (true)
-        {
-            if (Console.ReadKey(true).Key == ConsoleKey.Escape)
-            {
-                Environment.Exit(0);
-            }
-            else { }
-        }
+        while (Console.ReadKey(true).Key != ConsoleKey.Escape) ;
+        Environment.Exit(0);
     }
 
     static void Main(string[] args)
@@ -105,11 +80,9 @@ class Program
             "# Universal hash calculator by HardcoreMagazine                             #\n" +
             "# Official Github page: TODO                                                #\n" +
             "# To get hash-sum of file simply paste full path in the console             #\n" +
-            "# Press ESC to exit program                                                 #\n" +
+            "# Press ESC / Enter+ESC to exit program                                     #\n" +
             "#############################################################################\n"
             );
-        //simple loop that keeps program running unless user closes it OR presses [button]
-        //"ESC" in this case
         Task task = Task.Run(ExitOnPress);
         while (true)
         {
@@ -120,12 +93,16 @@ class Program
                 if (fs != null)
                 {
                     List<byte[]> hashes = CalculateHashes(fs);
-                    List<string> hashNames = new() { "@> MD-5: ", "@> SHA-256: ", "@> SHA-1: " };
+                    List<string> hashNames = new() { "@> MD-5: ", "@> SHA-1: ", "@> SHA-256: " };
                     for (int i = 0; (i < hashes.Count); i++)
                     {
-                        Console.Write(hashNames[i]);
-                        PrintByteArray(hashes[i]);
+                        Console.WriteLine(hashNames[i] +
+                            BitConverter.ToString(hashes[i]).Replace("-", "").ToLower());
                     }
+                    //MD5 hash should match other sources; however, SHA1 and SHA256 is
+                    //not going to. The issue is based on encoding differences;
+                    //also WEB pages might add extra header(s) to uploaded file
+                    //which will change sha1/sha256 hashes.
                 }
             }
         }

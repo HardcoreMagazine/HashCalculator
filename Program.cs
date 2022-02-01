@@ -93,10 +93,10 @@ class Program
                 if (fs != null)
                 {
                     List<byte[]> hashes = CalculateHashes(fs);
-                    List<string> hashNames = new() { "@> MD-5: ", "@> SHA-1: ", "@> SHA-256: " };
-                    for (int i = 0; (i < hashes.Count); i++)
+                    List<string> hashNames = new() { "MD5", "SHA-1", "SHA-256" };
+                    for (int i = 0; i < hashes.Count; i++)
                     {
-                        Console.WriteLine(hashNames[i] +
+                        Console.WriteLine("@> " + hashNames[i] + ": " +
                             BitConverter.ToString(hashes[i]).Replace("-", "").ToLower());
                     }
                     //MD5 hash should match other sources; however, SHA1 and SHA256 is

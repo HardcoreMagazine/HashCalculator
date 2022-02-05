@@ -43,30 +43,24 @@ class Program
         // --------- md5 ---------
         try
         {
-            using (var md5 = MD5.Create())
-            {
-                temp = md5.ComputeHash(bytes);
-            }
+            using var md5 = MD5.Create();
+            temp = md5.ComputeHash(bytes);
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
         // --------- sha1 ---------
         try
         {
-            using (var sha1 = SHA1.Create())
-            {
-                temp = sha1.ComputeHash(bytes);
-            }
+            using var sha1 = SHA1.Create();
+            temp = sha1.ComputeHash(bytes);
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
         // --------- sha256 ---------
         try
         {
-            using (var sha256 = SHA256.Create())
-            {
-                temp = sha256.ComputeHash(bytes);
-            }
+            using var sha256 = SHA256.Create();
+            temp = sha256.ComputeHash(bytes);
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
@@ -117,7 +111,7 @@ class Program
                             BitConverter.ToString(hashes[i]).Replace("-", "").ToLower());
                     }
                     fs.Close();
-                    //MD5 hash should match other sources; however, SHA1 and SHA256 is
+                    //MD5 hash should match other sources; however, SHA-1 and SHA-256 is
                     //not going to. The issue is based on encoding differences;
                     //also WEB pages might add extra bits to file after upload
                     //which will change outcome.

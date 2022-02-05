@@ -3,24 +3,32 @@ using System.Text;
 
 class Program
 {
-    static string? GetUserInput()
+    static string? ReadUserInput()
     {
         Console.Write(">> ");
         return Console.ReadLine();
     }
 
-    //some sources say you shouldnt return FileStream and use byte[] instead -- I dont see why not
+    //Creates byte-stream out of specified file
+    //some sources say you shouldnt return FileStream and use byte[] instead -- I don't see reason why
     //might reconsider later
     static FileStream? CreateFileStream(string path)
     {
         FileStream? fs = null;
-        try
+        if (File.Exists(path))
         {
-            fs = File.OpenRead(path);
+            try
+            {
+                fs = File.OpenRead(path);
+            }
+            catch
+            {
+                Console.WriteLine("@> An error occurred during file processing");
+            }
         }
-        catch
+        else
         {
-            Console.WriteLine("@> An error occurred during file processing.");
+            Console.WriteLine("@> Specified file does not exist or could not be found.");
         }
         return fs;
     }
@@ -30,6 +38,8 @@ class Program
         List<byte[]> hashList = new List<byte[]>();
         byte[] temp = new byte[] {};
         byte[] defaultErrorMessage = Encoding.ASCII.GetBytes("calculation error x_x");
+        //all 'calculators' locked inside try-catch block
+        //due to present garbage collector: it may accidently delete *unused* filestream
         // --------- md5 ---------
         try
         {
@@ -63,14 +73,19 @@ class Program
         return hashList;
     }
 
-    //simple loop that runs on background/2nd thread
-    //it'll close application on Escape/ESC press
-    // - unless user presses other button OR window running for the first time
-    // --- to fix ---
-    static void ExitOnPress()
+    //Key press handler -- works on parallel thread:
+    //ESC - exit
+    //expandable
+    static void ProcessKeyPress()
     {
-        while (Console.ReadKey(true).Key != ConsoleKey.Escape) ;
-        Environment.Exit(0);
+        while (true)
+        {
+            if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+            {
+                Console.WriteLine();
+                Environment.Exit(0);
+            }
+        }
     }
 
     static void Main(string[] args)
@@ -78,17 +93,19 @@ class Program
         Console.WriteLine(
             "#############################################################################\n" +
             "# Universal hash calculator by HardcoreMagazine                             #\n" +
-            "# Official Github page: TODO                                                #\n" +
+            "# Official Github page: https://github.com/HardcoreMagazine/HashCalculator  #\n" +
             "# To get hash-sum of file simply paste full path in the console             #\n" +
             "# Press ESC / Enter+ESC to exit program                                     #\n" +
-            "#############################################################################\n"
-            );
-        Task task = Task.Run(ExitOnPress);
+            "#############################################################################\n");
+        Task task = Task.Run(ProcessKeyPress); //V1 - not sure if anything changes
         while (true)
         {
-            string? path = GetUserInput();
+            //Task task = Task.Run(ProcessKeyPress); //V2 - not sure if anything changes
+            string? path = ReadUserInput();
             if (path != null)
             {
+                path = path.Replace('/', '\\').Replace("\"", "");
+                //"\"" may appear on Win 11 machines where "Copy as path" option is present
                 FileStream? fs = CreateFileStream(path);
                 if (fs != null)
                 {
@@ -99,10 +116,11 @@ class Program
                         Console.WriteLine("@> " + hashNames[i] + ": " +
                             BitConverter.ToString(hashes[i]).Replace("-", "").ToLower());
                     }
+                    fs.Close();
                     //MD5 hash should match other sources; however, SHA1 and SHA256 is
                     //not going to. The issue is based on encoding differences;
-                    //also WEB pages might add extra header(s) to uploaded file
-                    //which will change sha1/sha256 hashes.
+                    //also WEB pages might add extra bits to file after upload
+                    //which will change outcome.
                 }
             }
         }

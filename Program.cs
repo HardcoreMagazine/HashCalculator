@@ -26,10 +26,7 @@ class Program
                 Console.WriteLine("@> An error occurred during file processing");
             }
         }
-        else
-        {
-            Console.WriteLine("@> Specified file does not exist or could not be found.");
-        }
+        else Console.WriteLine("@> Specified file does not exist or could not be found.");
         return fs;
     }
 
@@ -44,7 +41,7 @@ class Program
         try
         {
             using var md5 = MD5.Create();
-            temp = md5.ComputeHash(bytes);
+                temp = md5.ComputeHash(bytes);
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
@@ -52,7 +49,7 @@ class Program
         try
         {
             using var sha1 = SHA1.Create();
-            temp = sha1.ComputeHash(bytes);
+                temp = sha1.ComputeHash(bytes);
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
@@ -60,7 +57,7 @@ class Program
         try
         {
             using var sha256 = SHA256.Create();
-            temp = sha256.ComputeHash(bytes);
+                temp = sha256.ComputeHash(bytes);
         }
         catch { temp = defaultErrorMessage; }
         finally { hashList.Add(temp); }
@@ -69,16 +66,13 @@ class Program
 
     //Key press handler -- works on parallel thread:
     //ESC - exit
-    //expandable
     static void ProcessKeyPress()
     {
         while (true)
         {
             if (Console.ReadKey(true).Key == ConsoleKey.Escape)
-            {
-                Console.WriteLine();
                 Environment.Exit(0);
-            }
+            //expandable
         }
     }
 
@@ -89,12 +83,11 @@ class Program
             "# Universal hash calculator by HardcoreMagazine                             #\n" +
             "# Official Github page: https://github.com/HardcoreMagazine/HashCalculator  #\n" +
             "# To get hash-sum of file simply paste full path in the console             #\n" +
-            "# Press ESC / Enter+ESC to exit program                                     #\n" +
+            "# Press ESC to exit program                                                 #\n" +
             "#############################################################################\n");
-        Task task = Task.Run(ProcessKeyPress); //V1 - not sure if anything changes
+        Task task = Task.Run(ProcessKeyPress);
         while (true)
         {
-            //Task task = Task.Run(ProcessKeyPress); //V2 - not sure if anything changes
             string? path = ReadUserInput();
             if (path != null)
             {

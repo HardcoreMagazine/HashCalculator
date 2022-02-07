@@ -5,13 +5,16 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <Authors>HardcoreMagazine</Authors>
+    <Authors>github.com/HardcoreMagazine</Authors>
     <Version>1.0</Version>
     <RepositoryUrl>https://github.com/HardcoreMagazine/HashCalculator</RepositoryUrl>
-    <StartupObject>Program</StartupObject>
+    <StartupObject></StartupObject>
     <ApplicationIcon>490580.ico</ApplicationIcon>
     <PackageProjectUrl>https://github.com/HardcoreMagazine/HashCalculator</PackageProjectUrl>
     <AnalysisLevel>latest</AnalysisLevel>
+    <Company></Company>
+    <Description>Simple utility to calculate file hashes (MD5, SHA1, SHA256)</Description>
+    <Copyright>MIT License / HardcoreMagazine, 2022</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

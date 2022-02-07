@@ -26,41 +26,25 @@ class Program
                 Console.WriteLine("@> An error occurred during file processing");
             }
         }
-        else Console.WriteLine("@> Specified file does not exist or could not be found.");
+        else 
+            Console.WriteLine("@> Specified file does not exist or could not be found.");
         return fs;
     }
 
-    static List<byte[]> CalculateHashes(FileStream bytes)
+    static List<byte[]> CalculateHashes(FileStream fs)
     {
         List<byte[]> hashList = new List<byte[]>();
-        byte[] temp = new byte[] {};
-        byte[] defaultErrorMessage = Encoding.ASCII.GetBytes("calculation error x_x");
-        //all 'calculators' locked inside try-catch block
-        //due to present garbage collector: it may accidently delete *unused* filestream
         // --------- md5 ---------
-        try
-        {
-            using var md5 = MD5.Create();
-                temp = md5.ComputeHash(bytes);
-        }
-        catch { temp = defaultErrorMessage; }
-        finally { hashList.Add(temp); }
+        hashList.Add(MD5.Create().ComputeHash(fs));
+        fs.Seek(0, SeekOrigin.Begin);
+        //reset ~StreamReader pointer to origin point
+        //is mandatory -- otherwise you'll get equal
+        //SHA1/SHA256 hashes for 2 different files
         // --------- sha1 ---------
-        try
-        {
-            using var sha1 = SHA1.Create();
-                temp = sha1.ComputeHash(bytes);
-        }
-        catch { temp = defaultErrorMessage; }
-        finally { hashList.Add(temp); }
+        hashList.Add(SHA1.Create().ComputeHash(fs));
+        fs.Seek(0, SeekOrigin.Begin);
         // --------- sha256 ---------
-        try
-        {
-            using var sha256 = SHA256.Create();
-                temp = sha256.ComputeHash(bytes);
-        }
-        catch { temp = defaultErrorMessage; }
-        finally { hashList.Add(temp); }
+        hashList.Add(SHA256.Create().ComputeHash(fs));
         return hashList;
     }
 
@@ -83,7 +67,7 @@ class Program
             "# Universal hash calculator by HardcoreMagazine                             #\n" +
             "# Official Github page: https://github.com/HardcoreMagazine/HashCalculator  #\n" +
             "# To get hash-sum of file simply paste full path in the console             #\n" +
-            "# Press ESC to exit program                                                 #\n" +
+            "# Press Esc / Enter + Esc to exit program                                   #\n" +
             "#############################################################################\n");
         Task task = Task.Run(ProcessKeyPress);
         while (true)
@@ -97,16 +81,20 @@ class Program
                 if (fs != null)
                 {
                     List<byte[]> hashes = CalculateHashes(fs);
-                    List<string> hashNames = new() { "MD5", "SHA-1", "SHA-256" };
+                    fs.Close();
+                    List<string> hashNames = new() { "MD5", "SHA1", "SHA256" };
                     for (int i = 0; i < hashes.Count; i++)
                     {
-                        Console.WriteLine("@> " + hashNames[i] + ": " +
-                            BitConverter.ToString(hashes[i]).Replace("-", "").ToLower());
+                        if (hashes[i] != null)
+                            Console.WriteLine("@> " + hashNames[i] + ": " +
+                                BitConverter.ToString(hashes[i]).Replace("-", "").ToLower());
+                        else
+                            Console.WriteLine("@> "+ hashNames[i] + ": " +
+                                "calculation error x_x");
                     }
-                    fs.Close();
-                    //MD5 hash should match other sources; however, SHA-1 and SHA-256 is
-                    //not going to. The issue is based on encoding differences;
-                    //also WEB pages might add extra bits to file after upload
+                    //MD5 hash should match other sources; however, SHA1 and SHA256
+                    //may be different. The issue is based on encoding differences;
+                    //also some WEB pages might add extra bits to file header after upload
                     //which will change outcome.
                 }
             }

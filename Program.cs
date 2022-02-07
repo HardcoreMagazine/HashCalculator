@@ -22,11 +22,17 @@ class Program
             }
             catch
             {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("@> An error occurred during file processing");
+                Console.ResetColor();
             }
         }
-        else 
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("@> Specified file does not exist or could not be found.");
+            Console.ResetColor();
+        }
         return fs;
     }
 
@@ -61,6 +67,7 @@ class Program
 
     static void Main(string[] args)
     {
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine(
             "#############################################################################\n" +
             "# Universal hash calculator by HardcoreMagazine                             #\n" +
@@ -68,6 +75,7 @@ class Program
             "# To get hash-sum of file simply paste full path in the console             #\n" +
             "# Press Esc / Enter + Esc to exit program                                   #\n" +
             "#############################################################################\n");
+        Console.ResetColor();
         Task task = Task.Run(ProcessKeyPress);
         while (true)
         {
@@ -85,11 +93,19 @@ class Program
                     for (int i = 0; i < hashes.Count; i++)
                     {
                         if (hashes[i] != null)
-                            Console.WriteLine("@> " + hashNames[i] + ": " +
+                        {
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.WriteLine("@> " + hashNames[i] + ": " + 
                                 BitConverter.ToString(hashes[i]).Replace("-", "").ToLower());
+                            Console.ResetColor();
+                        }
+
                         else
-                            Console.WriteLine("@> "+ hashNames[i] + ": " +
-                                "calculation error x_x");
+                        {
+                            Console.ForegroundColor= ConsoleColor.DarkRed;
+                            Console.WriteLine("@> " + hashNames[i] + ": " + "calculation error x_x");
+                            Console.ResetColor();
+                        }
                     }
                     //MD5 hash should match other sources; however, SHA1 and SHA256
                     //may be different. The issue is based on encoding differences;

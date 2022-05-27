@@ -5,7 +5,16 @@ class Program
     static string? ReadUserInput()
     {
         Console.Write(">> ");
-        return Console.ReadLine();
+        string? input = Console.ReadLine();
+        if (input == "q" || input == "quit")
+        {
+            Environment.Exit(0);
+            return null;
+        }
+        else
+        {
+            return input;
+        }
     }
 
     //Creates byte-stream out of specified file
@@ -53,34 +62,21 @@ class Program
         return hashList;
     }
 
-    //Key press handler -- works on parallel thread:
-    //ESC - exit
-    static void ProcessKeyPress()
-    {
-        while (true)
-        {
-            if (Console.ReadKey(true).Key == ConsoleKey.Escape)
-                Environment.Exit(0);
-            //expandable
-        }
-    }
-
     static void Main(string[] args)
     {
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine(
-            "#############################################################################\n" +
-            "# Universal hash calculator by HardcoreMagazine                             #\n" +
-            "# Official Github page: https://github.com/HardcoreMagazine/HashCalculator  #\n" +
-            "# To get hash-sum of file simply paste full path in the console             #\n" +
-            "# Press Esc / Enter + Esc to exit program                                   #\n" +
-            "#############################################################################\n");
+            "############################################################################\n" +
+            "# Universal hash calculator by HardcoreMagazine                            #\n" +
+            "# Official Github page: https://github.com/HardcoreMagazine/HashCalculator #\n" +
+            "# To get hash-sum of file simply paste full path in the console            #\n" +
+            "# Type \"q\" or \"quit\" to exit program                                   #\n" +
+            "############################################################################\n");
         Console.ResetColor();
-        Task task = Task.Run(ProcessKeyPress);
         while (true)
         {
             string? path = ReadUserInput();
-            if (path != null)
+            if (path != null) 
             {
                 path = path.Replace('/', '\\').Replace("\"", "");
                 //"\"" may appear on Win 11 machines where "Copy as path" option is present
@@ -112,6 +108,10 @@ class Program
                     //also some WEB pages might add extra bits to file header after upload
                     //which will change outcome.
                 }
+            }
+            else 
+            { 
+                Console.WriteLine("Incorrect/empty path entered, retry.");
             }
         }
     }

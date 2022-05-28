@@ -70,7 +70,7 @@ class Program
             "# Universal hash calculator by HardcoreMagazine                            #\n" +
             "# Official Github page: https://github.com/HardcoreMagazine/HashCalculator #\n" +
             "# To get hash-sum of file simply paste full path in the console            #\n" +
-            "# Type \"q\" or \"quit\" to exit program                                   #\n" +
+            "# Type \"q\" or \"quit\" to exit program                                       #\n" +
             "############################################################################\n");
         Console.ResetColor();
         while (true)
